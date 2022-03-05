@@ -1,5 +1,6 @@
 package cn.how2j.diytomcat;
 
+import cn.how2j.diytomcat.http.Request;
 import cn.hutool.core.util.NetUtil;
 
 import java.io.IOException;
@@ -22,12 +23,10 @@ public class bootstrap {
 
             while (true) {
                 Socket s = ss.accept();
-                InputStream is = s.getInputStream();
-                int bufferSize = 1024;
-                byte[] buffer = new byte[bufferSize];
-                is.read(buffer);
-                String requestString = new String(buffer, "utf-8");
-                System.out.println("浏览器的输入信息： \r\n" + requestString);
+                //使用封装的Request对象
+                Request request = new Request(s);
+                System.out.println("浏览器的输入信息： \r\n" + request.getRequestString());
+                System.out.println("uri:" + request.getUri());
 
                 OutputStream os = s.getOutputStream();
                 String response_head = "HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n\r\n";

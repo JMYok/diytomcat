@@ -21,7 +21,9 @@ public class Request {
     }
 
     private void parseHttpRequest() throws IOException {
+        //通过socket得到输入流数据
         InputStream is = this.socket.getInputStream();
+        //通过MiniBrowser将流数据读取为字节数组
         byte[] bytes = MiniBrowser.readBytes(is);
         requestString = new String(bytes, "utf-8");
     }
@@ -29,11 +31,13 @@ public class Request {
     private void parseUri() {
         String temp;
 
+        //取空格之间的uri
         temp = StrUtil.subBetween(requestString, " ", " ");
         if (!StrUtil.contains(temp, '?')) {
             uri = temp;
             return;
         }
+        //若有？则截取之前
         temp = StrUtil.subBefore(temp, '?', false);
         uri = temp;
     }

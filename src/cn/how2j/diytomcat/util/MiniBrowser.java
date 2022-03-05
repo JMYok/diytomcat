@@ -128,6 +128,8 @@ public class MiniBrowser {
         byte buffer[] = new byte[buffer_size];
         //创建内存输出流
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        //不断读取，不是只能读取buffer_size个数据
         while(true) {
             int length = is.read(buffer);
             if(-1==length) //输入流为空
