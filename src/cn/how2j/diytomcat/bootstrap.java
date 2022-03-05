@@ -1,7 +1,11 @@
 package cn.how2j.diytomcat;
 
 import cn.how2j.diytomcat.http.Request;
+import cn.how2j.diytomcat.http.Response;
+import cn.how2j.diytomcat.util.Constant;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.NetUtil;
+import cn.hutool.core.util.StrUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,18 +32,34 @@ public class bootstrap {
                 System.out.println("浏览器的输入信息： \r\n" + request.getRequestString());
                 System.out.println("uri:" + request.getUri());
 
-                OutputStream os = s.getOutputStream();
-                String response_head = "HTTP/1.1 200 OK\r\n" + "Content-Type: text/html\r\n\r\n";
-                String responseString = "Hello DIY Tomcat from how2j.cn";
-                responseString = response_head + responseString;
-                os.write(responseString.getBytes());
-                os.flush();
-                s.close();
+                Response response = new Response();
+                String html = "Hello DIY Tomcat from how2j.cn";
+                response.getWriter().println(html);
+
+                //将数据发给浏览器
+                handle200(s, response);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
 
+    }
+
+    private static void handle200(Socket s, Response response) throws IOException {
+        String contentType = response.getContentType();
+        String headText = Constant.response_head_202;
+        headText = StrUtil.format(headText, contentType); //将常量中的值 替换为具体 如text/html
+        byte[] head = headText.getBytes();
+
+        byte[] body = response.getBody();
+
+        byte[] responseBytes = new byte[head.length + body.length];
+        ArrayUtil.copy(head, 0, responseBytes, 0, head.length);
+        ArrayUtil.copy(body, 0, responseBytes, head.length, body.length);
+
+        OutputStream os = s.getOutputStream();
+        os.write(responseBytes);
+        s.close();
     }
 }
